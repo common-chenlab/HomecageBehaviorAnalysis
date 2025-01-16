@@ -294,7 +294,9 @@ class PostAnalysisDLC():
         create_batch, batch_indexes = utils.batch_for_trial(MARKERS_ABOVE_CONFIDENCE.copy(), MINIMUM_BATCH_SIZE=5)
 
         if create_batch:
-            egocentric_dlc_arr = egocentric_dlc_arr[batch_indexes[0]:batch_indexes[-1]+1]
+            egocentric_dlc_arr_1 = egocentric_dlc_arr[batch_indexes[0]:batch_indexes[-1]+1]
+            egocentric_dlc_arr_2=egocentric_dlc_arr
+            MARKERS_ABOVE_CONFIDENCE_1=MARKERS_ABOVE_CONFIDENCE
             MARKERS_ABOVE_CONFIDENCE = MARKERS_ABOVE_CONFIDENCE[batch_indexes[0]:batch_indexes[-1]+1]
 
         if np.any(np.isnan(egocentric_dlc_arr)) == True:
@@ -306,11 +308,11 @@ class PostAnalysisDLC():
             OUTPUT["MARKERS_ABOVE_CONFIDENCE"] = MARKERS_ABOVE_CONFIDENCE
         else: 
             # situations where markers stretch outside of training module. we can fix by simply subtracting from main
-            egocentric_dlc_arr = utils.fix_stretch(egocentric_dlc_arr.copy())
-            OUTPUT["processed_dlc_arr"] = egocentric_dlc_arr
-            OUTPUT["num_of_frames"] = egocentric_dlc_arr.shape[0]
+            #egocentric_dlc_arr = utils.fix_stretch(egocentric_dlc_arr.copy())
+            OUTPUT["processed_dlc_arr"] = egocentric_dlc_arr_2
+            OUTPUT["num_of_frames"] = egocentric_dlc_arr_2.shape[0]
             OUTPUT["valid_clip"] = True
-            OUTPUT["MARKERS_ABOVE_CONFIDENCE"] = MARKERS_ABOVE_CONFIDENCE
+            OUTPUT["MARKERS_ABOVE_CONFIDENCE"] = MARKERS_ABOVE_CONFIDENCE_1
             OUTPUT["processed_start_end_index"] = batch_indexes
             
         return OUTPUT
