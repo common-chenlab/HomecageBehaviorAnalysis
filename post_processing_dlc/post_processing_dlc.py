@@ -51,8 +51,10 @@ class PostAnalysisDLC():
                 return npz_file_path
 
         # get list of mat files
+        print(csv_path)
         trial_data = pd.read_csv(csv_path).values
         mat_file_list = [trial[1] for trial in trial_data]
+        #print(mat_file_list)
         
         if len(mat_file_list) > 0:
             print("\tNumber of mat files in FOUND_TRIALS.csv:", len(mat_file_list))
@@ -71,6 +73,7 @@ class PostAnalysisDLC():
         ERROR_TRIALS = []
         ERROR_TRIALS2 = []
         MAT_FILES_NOT_USED = []
+        INVALID_REASON=[]
 
         try: # skip entire animal dataset if error occurs
             for mat_file in tqdm(mat_file_list, desc="\tPost-processing data", disable=disable_progressbar):  
@@ -87,6 +90,8 @@ class PostAnalysisDLC():
                     ERROR_TRIALS.append(OUTPUT["MARKERS_ABOVE_CONFIDENCE"])
                     ERROR_TRIALS2.append(OUTPUT["confidence_arr"])
                     MAT_FILES_NOT_USED.append(OUTPUT["mat_file"])
+                    INVALID_REASON.append(OUTPUT["invalid_reason"])
+
                     
             print("\n\t{}/{} clips used".format(len(MAT_FILES_USED), len(mat_file_list)))
         except:
@@ -125,6 +130,7 @@ class PostAnalysisDLC():
                 mat_file = utils.linux2windowspath(mat_file)
                 matdata = loadmat(mat_file)
                 matdata["post_processed_success"] = False
+                matdata["invalid_reason"] = INVALID_REASON[i]
                 savemat(mat_file, matdata)
                 
                 try: # attempt to chmod 777, continue even if fails
@@ -208,6 +214,7 @@ class PostAnalysisDLC():
         if VALID_FRAME_ARR.sum() < 5: # set dlc_arr to zeros
             OUTPUT["valid_clip"] = False
             OUTPUT["MARKERS_ABOVE_CONFIDENCE"] = MARKERS_ABOVE_CONFIDENCE
+            OUTPUT["invalid_reason"] = "valid frame less than 5"
             return OUTPUT
         
         # # front cutoff
@@ -298,7 +305,7 @@ class PostAnalysisDLC():
             egocentric_dlc_arr_2=egocentric_dlc_arr
             MARKERS_ABOVE_CONFIDENCE_1=MARKERS_ABOVE_CONFIDENCE
             MARKERS_ABOVE_CONFIDENCE = MARKERS_ABOVE_CONFIDENCE[batch_indexes[0]:batch_indexes[-1]+1]
-
+            
         if np.any(np.isnan(egocentric_dlc_arr)) == True:
             raise ValueError("NaN present in processed DLC error for {}".format(os.path.basename(mat_file)))
         
@@ -306,6 +313,8 @@ class PostAnalysisDLC():
         if np.all(MARKERS_ABOVE_CONFIDENCE) == False:
             OUTPUT["valid_clip"] = False 
             OUTPUT["MARKERS_ABOVE_CONFIDENCE"] = MARKERS_ABOVE_CONFIDENCE
+            OUTPUT["invalid_reason"] = "not all markers above confidence"
+            
         else: 
             # situations where markers stretch outside of training module. we can fix by simply subtracting from main
             #egocentric_dlc_arr = utils.fix_stretch(egocentric_dlc_arr.copy())

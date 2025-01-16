@@ -4,7 +4,8 @@ Using the DeepLabCut pose data, running behavioral analysis with MotionMapper to
 2. https://github.com/bermanlabemory/motionmapperpy
 
 ## Installing dependencies
-Make sure you have a virtual environment setup before installing all dependencies. You can do this with either Anaconda(conda) or traditional Python(pip). 
+Make sure you have a virtual environment setup before installing all dependencies. 
+You can do this with either Anaconda(conda) or traditional Python(pip). 
 
 ## Pipeline
 The overall analysis is broken up into 3 steps:
@@ -14,12 +15,15 @@ The overall analysis is broken up into 3 steps:
 3. Store analyzed data into its respective trial .mat files
 
 ## Configuration
-All the parameters used throughout the process are contained in the config.yaml file. Use [template_config.yaml](configs/template_config.yaml) as an example of what parameters to modify and understand what each does. Make a copy of the [template_config.yaml](configs/template_config.yaml) file and modify this file instead of the template.
+All the parameters used throughout the process are contained in the config.yaml file. 
+Use [template_config.yaml](configs/template_config.yaml) as an example of what parameters to modify and understand what each does. 
+Make a copy of the [template_config.yaml](configs/template_config.yaml) file and modify this file instead of the template.
 
 ## Running Analysis
 
 ### Step 1: Query data from DataJoint
-The initial step of the process is gathering all data from DataJoint and saving its contents into a CSV file. Note, this step can only be done on local Windows machines in the lab since we aren't able to open SSH tunnels on any SCC compute nodes. 
+The initial step of the process is gathering all data from DataJoint and saving its contents into a CSV file. 
+Note, this step can only be done on local Windows machines in the lab since we aren't able to open SSH tunnels on any SCC compute nodes. 
 
 Important parameters to set in your config file:
 1. `processing_folder`
